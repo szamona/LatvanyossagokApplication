@@ -19,10 +19,13 @@ namespace LatvanyossagokApplication
             InitializeComponent();
             conn = new MySqlConnection("Server=localhost; Database=latvanyossagokdb; Uid=root; Pwd=;");
             conn.Open();
+           
             varosokTablaLetrehozas();
             latvanyosagokTablaLetrehozas();
             VarosListazas();
             LatvanyossagListazas();
+            ModositGroupBox();
+            LModositGroupBox();
         }
 
 
@@ -37,9 +40,31 @@ namespace LatvanyossagokApplication
                                   `varos_id` int(11) NOT NULL,
                                   PRIMARY KEY (`id`),
                                   KEY `varos_id` (`varos_id`),
-                                FOREIGN KEY(varos_id) REFERENCES varosok (id)
+                                FOREIGN KEY(varos_id) REFERENCES varosok (id) ON DELETE CASCADE ON UPDATE CASCADE
                                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci;";
             cmd.ExecuteNonQuery();
+        }
+        void ModositGroupBox()
+        {
+             if (listBoxVarosok.SelectedIndex>=0)
+            {
+                groupBoxModositas.Enabled = true;
+            }
+            else
+            {
+                groupBoxModositas.Enabled = false;
+            }
+        }
+        void LModositGroupBox()
+        {
+            if (listBoxLatvanyossagok.SelectedIndex>=0)
+            {
+                groupBoxLatvanyossagModosit.Enabled = true;
+            }
+            else
+            {
+                groupBoxLatvanyossagModosit.Enabled = false;
+            }
         }
         void varosokTablaLetrehozas()
         {
@@ -70,6 +95,7 @@ namespace LatvanyossagokApplication
                     listBoxVarosok.Items.Add(varos);
                 }
             }
+            ModositGroupBox();
         }
         void LatvanyossagListazas()
         {
@@ -128,6 +154,81 @@ namespace LatvanyossagokApplication
             Varos varos = (Varos)listBoxVarosok.SelectedItem;
             cmd.Parameters.AddWithValue("@varos_id", varos.Id);
 
+            cmd.ExecuteNonQuery();
+            LatvanyossagListazas();
+
+        }
+
+        private void ListBoxVarosok_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ModositGroupBox();
+            if (listBoxVarosok.SelectedIndex>=0)
+            {
+                Varos varos = (Varos)listBoxVarosok.SelectedItem;
+                textBoxVarosNevModosit.Text = varos.Nev;
+                numericUpDownVarosLakossagModosit.Value = varos.Lakossag;
+
+            }
+
+        }
+
+        private void ButtonVarosModosit_Click(object sender, EventArgs e)
+        {
+            var cmd = conn.CreateCommand();
+            cmd.CommandText = @"UPDATE varosok
+                                SET  
+                                    nev = @nev,
+                                    lakossag = @lakossag
+                                WHERE id=@id";
+            cmd.Parameters.AddWithValue("@nev", textBoxVarosNevModosit.Text);
+            cmd.Parameters.AddWithValue("@lakossag", numericUpDownVarosLakossagModosit.Value);
+            Varos varos = (Varos)listBoxVarosok.SelectedItem;
+            cmd.Parameters.AddWithValue("@id", varos.Id);
+            cmd.ExecuteNonQuery();
+            VarosListazas();
+
+
+        }
+
+        private void ButtonLTorles_Click(object sender, EventArgs e)
+        {
+            var cmd = conn.CreateCommand();
+            cmd.CommandText = @"DELETE  
+                                FROM latvanyossagok
+                                WHERE id = @id";
+            Latvanyossag latvanyossag = (Latvanyossag)listBoxLatvanyossagok.SelectedItem;
+            cmd.Parameters.AddWithValue("@id", latvanyossag.Id);
+            cmd.ExecuteNonQuery();
+            LatvanyossagListazas();
+        }
+
+        private void ListBoxLatvanyossagok_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LModositGroupBox();
+            if (listBoxLatvanyossagok.SelectedIndex >= 0)
+            {
+                Latvanyossag latvanyossag = (Latvanyossag)listBoxLatvanyossagok.SelectedItem;
+                textBoxLatvanyossagUjNEv.Text = latvanyossag.Nev;
+                textBoxLatvanyossagUJleiras.Text = latvanyossag.Leiras;
+                numericUpDownLatvanyossagUjAr.Value = latvanyossag.Ar;
+
+            }
+        }
+
+        private void ButtonLModosit_Click(object sender, EventArgs e)
+        {
+            var cmd = conn.CreateCommand();
+            cmd.CommandText = @"UPDATE latvanyossagok
+                                SET  
+                                    nev = @nev,
+                                    leiras = @leiras,
+                                    ar = @ar
+                                WHERE id=@id";
+            cmd.Parameters.AddWithValue("@nev", textBoxLatvanyossagUjNEv.Text);
+            cmd.Parameters.AddWithValue("@leiras", textBoxLatvanyossagUJleiras.Text);
+            cmd.Parameters.AddWithValue("@ar", numericUpDownLatvanyossagUjAr.Value);
+            Latvanyossag latvanyossag = (Latvanyossag)listBoxLatvanyossagok.SelectedItem;
+            cmd.Parameters.AddWithValue("@id", latvanyossag.Id);
             cmd.ExecuteNonQuery();
             LatvanyossagListazas();
 

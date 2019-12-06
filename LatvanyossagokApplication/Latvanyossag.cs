@@ -23,9 +23,24 @@ namespace LatvanyossagokApplication
             this.varos_id = varos_id;
         }
 
+        public int Id { get => id; set => id = value; }
+        public string Nev { get => nev; set => nev = value; }
+        public string Leiras { get => leiras; set => leiras = value; }
+        public int Ar { get => ar; set => ar = value; }
+        public int Varos_id { get => varos_id; set => varos_id = value; }
+
         public override string ToString()
         {
-            return (nev +" - "+ar+" Ft");
+             if (ar==0)
+            {
+              return (nev + " - ingyenes");
+            }
+            else 
+            {
+                return (nev + " - " + ar + " Ft");
+            }
+
+            
         }
     }
 }
