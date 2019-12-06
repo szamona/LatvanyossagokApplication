@@ -186,7 +186,7 @@ namespace LatvanyossagokApplication
             cmd.Parameters.AddWithValue("@id", varos.Id);
             cmd.ExecuteNonQuery();
             VarosListazas();
-
+            LatvanyossagListazas();
 
         }
 
@@ -200,6 +200,7 @@ namespace LatvanyossagokApplication
             cmd.Parameters.AddWithValue("@id", latvanyossag.Id);
             cmd.ExecuteNonQuery();
             LatvanyossagListazas();
+            
         }
 
         private void ListBoxLatvanyossagok_SelectedIndexChanged(object sender, EventArgs e)

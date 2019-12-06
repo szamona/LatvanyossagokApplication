@@ -371,6 +371,11 @@
             // numericUpDownLatvanyossagUjAr
             // 
             this.numericUpDownLatvanyossagUjAr.Location = new System.Drawing.Point(62, 92);
+            this.numericUpDownLatvanyossagUjAr.Maximum = new decimal(new int[] {
+            1874919424,
+            2328306,
+            0,
+            0});
             this.numericUpDownLatvanyossagUjAr.Name = "numericUpDownLatvanyossagUjAr";
             this.numericUpDownLatvanyossagUjAr.Size = new System.Drawing.Size(120, 20);
             this.numericUpDownLatvanyossagUjAr.TabIndex = 5;
