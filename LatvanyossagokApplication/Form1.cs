@@ -19,7 +19,7 @@ namespace LatvanyossagokApplication
             InitializeComponent();
             conn = new MySqlConnection("Server=localhost; Database=latvanyossagokdb; Uid=root; Pwd=;");
             conn.Open();
-           
+            adatbazisLetrehoz();
             varosokTablaLetrehozas();
             latvanyosagokTablaLetrehozas();
             VarosListazas();
@@ -65,6 +65,14 @@ namespace LatvanyossagokApplication
             {
                 groupBoxLatvanyossagModosit.Enabled = false;
             }
+        }
+        private void adatbazisLetrehoz()
+        {
+            var cmd = conn.CreateCommand();
+            cmd.CommandText = @"CREATE DATABASE IF NOT EXISTS `latvanyossagokdb` 
+                                DEFAULT CHARACTER SET utf8 COLLATE utf8_hungarian_ci;
+                            USE `latvanyossagokdb`;";
+            cmd.ExecuteNonQuery();
         }
         void varosokTablaLetrehozas()
         {
@@ -120,13 +128,28 @@ namespace LatvanyossagokApplication
 
         private void ButtonHozzaad_Click(object sender, EventArgs e)
         {
-            var cmd = conn.CreateCommand();
-            cmd.CommandText = @"INSERT INTO varosok (nev,lakossag)
+            if (textBoxVarosok.Text != "" && Char.IsUpper(textBoxVarosok.Text, 0))
+            {
+                labelVarosnev.ForeColor = Color.Black;
+                var cmd = conn.CreateCommand();
+                cmd.CommandText = @"INSERT INTO varosok (nev,lakossag)
                                               VALUES(@nev,@lakossag)";
-            cmd.Parameters.AddWithValue("@nev", textBoxVarosok.Text);
-            cmd.Parameters.AddWithValue("@lakossag", numericUpDownLakossag.Value);
-            cmd.ExecuteNonQuery();
-            VarosListazas();
+                cmd.Parameters.AddWithValue("@nev", textBoxVarosok.Text);
+                cmd.Parameters.AddWithValue("@lakossag", numericUpDownLakossag.Value);
+                cmd.ExecuteNonQuery();
+                VarosListazas();
+            }
+            else if (textBoxVarosok.Text == "")
+            {
+                MessageBox.Show("Adja meg a város nevét!");
+                labelVarosnev.ForeColor = Color.Red;
+            }
+            else
+            {
+                MessageBox.Show("A város neve nagybetűvel kell kezdődjön!");
+                labelVarosnev.ForeColor = Color.Red;
+
+            }
 
         }
 
@@ -145,17 +168,33 @@ namespace LatvanyossagokApplication
 
         private void ButtonLHozzaad_Click(object sender, EventArgs e)
         {
-            var cmd = conn.CreateCommand();
-            cmd.CommandText = @"INSERT INTO latvanyossagok (nev, leiras, ar, varos_id)
+            if (textBoxLatvanyossagNev.Text != "" && Char.IsUpper(textBoxLatvanyossagNev.Text, 0))
+            {
+                labelLatvanyossagNev.ForeColor = Color.Black;
+                var cmd = conn.CreateCommand();
+                cmd.CommandText = @"INSERT INTO latvanyossagok (nev, leiras, ar, varos_id)
                                               VALUES(@nev, @leiras, @ar, @varos_id)";
-            cmd.Parameters.AddWithValue("@nev",textBoxLatvanyossagNev.Text);
-            cmd.Parameters.AddWithValue("@leiras", textBoxLatvanyossagLeiras.Text);
-            cmd.Parameters.AddWithValue("@ar", numericUpDownLatvanyossagAr.Value);
-            Varos varos = (Varos)listBoxVarosok.SelectedItem;
-            cmd.Parameters.AddWithValue("@varos_id", varos.Id);
+                cmd.Parameters.AddWithValue("@nev", textBoxLatvanyossagNev.Text);
+                cmd.Parameters.AddWithValue("@leiras", textBoxLatvanyossagLeiras.Text);
+                cmd.Parameters.AddWithValue("@ar", numericUpDownLatvanyossagAr.Value);
+                Varos varos = (Varos)listBoxVarosok.SelectedItem;
+                cmd.Parameters.AddWithValue("@varos_id", varos.Id);
 
-            cmd.ExecuteNonQuery();
-            LatvanyossagListazas();
+                cmd.ExecuteNonQuery();
+                LatvanyossagListazas();
+            }
+            else if (textBoxLatvanyossagNev.Text == "")
+            {
+                MessageBox.Show("Adja meg a látványosság nevét!");
+                labelLatvanyossagNev.ForeColor = Color.Red;
+            }
+            else
+            {
+                MessageBox.Show("A látványosság neve nagybetűvel kell kezdődjön!");
+                labelLatvanyossagNev.ForeColor = Color.Red;
+
+            }
+
 
         }
 
@@ -174,19 +213,35 @@ namespace LatvanyossagokApplication
 
         private void ButtonVarosModosit_Click(object sender, EventArgs e)
         {
-            var cmd = conn.CreateCommand();
-            cmd.CommandText = @"UPDATE varosok
-                                SET  
-                                    nev = @nev,
-                                    lakossag = @lakossag
-                                WHERE id=@id";
-            cmd.Parameters.AddWithValue("@nev", textBoxVarosNevModosit.Text);
-            cmd.Parameters.AddWithValue("@lakossag", numericUpDownVarosLakossagModosit.Value);
-            Varos varos = (Varos)listBoxVarosok.SelectedItem;
-            cmd.Parameters.AddWithValue("@id", varos.Id);
-            cmd.ExecuteNonQuery();
-            VarosListazas();
-            LatvanyossagListazas();
+
+            if (textBoxVarosNevModosit.Text != "" && Char.IsUpper(textBoxVarosNevModosit.Text, 0))
+            {
+                labelUjvarosnev.ForeColor = Color.Black;
+                var cmd = conn.CreateCommand();
+                cmd.CommandText = @"UPDATE varosok
+                                    SET  
+                                        nev = @nev,
+                                        lakossag = @lakossag
+                                    WHERE id=@id";
+                cmd.Parameters.AddWithValue("@nev", textBoxVarosNevModosit.Text);
+                cmd.Parameters.AddWithValue("@lakossag", numericUpDownVarosLakossagModosit.Value);
+                Varos varos = (Varos)listBoxVarosok.SelectedItem;
+                cmd.Parameters.AddWithValue("@id", varos.Id);
+                cmd.ExecuteNonQuery();
+                VarosListazas();
+                LatvanyossagListazas();
+            }
+            else if (textBoxVarosNevModosit.Text == "")
+            {
+                MessageBox.Show("Adja meg a város nevét!");
+                labelUjvarosnev.ForeColor = Color.Red;
+            }
+            else
+            {
+                MessageBox.Show("A város neve nagybetűvel kell kezdődjön!");
+                labelUjvarosnev.ForeColor = Color.Red;
+
+            }
 
         }
 
@@ -218,20 +273,35 @@ namespace LatvanyossagokApplication
 
         private void ButtonLModosit_Click(object sender, EventArgs e)
         {
-            var cmd = conn.CreateCommand();
-            cmd.CommandText = @"UPDATE latvanyossagok
+            if (textBoxLatvanyossagUjNEv.Text != "" && Char.IsUpper(textBoxLatvanyossagUjNEv.Text, 0))
+            {
+                labelUjlatvanyossagNev.ForeColor = Color.Black;
+                var cmd = conn.CreateCommand();
+                cmd.CommandText = @"UPDATE latvanyossagok
                                 SET  
                                     nev = @nev,
                                     leiras = @leiras,
                                     ar = @ar
                                 WHERE id=@id";
-            cmd.Parameters.AddWithValue("@nev", textBoxLatvanyossagUjNEv.Text);
-            cmd.Parameters.AddWithValue("@leiras", textBoxLatvanyossagUJleiras.Text);
-            cmd.Parameters.AddWithValue("@ar", numericUpDownLatvanyossagUjAr.Value);
-            Latvanyossag latvanyossag = (Latvanyossag)listBoxLatvanyossagok.SelectedItem;
-            cmd.Parameters.AddWithValue("@id", latvanyossag.Id);
-            cmd.ExecuteNonQuery();
-            LatvanyossagListazas();
+                cmd.Parameters.AddWithValue("@nev", textBoxLatvanyossagUjNEv.Text);
+                cmd.Parameters.AddWithValue("@leiras", textBoxLatvanyossagUJleiras.Text);
+                cmd.Parameters.AddWithValue("@ar", numericUpDownLatvanyossagUjAr.Value);
+                Latvanyossag latvanyossag = (Latvanyossag)listBoxLatvanyossagok.SelectedItem;
+                cmd.Parameters.AddWithValue("@id", latvanyossag.Id);
+                cmd.ExecuteNonQuery();
+                LatvanyossagListazas();
+            }
+            else if (textBoxLatvanyossagUjNEv.Text == "")
+            {
+                MessageBox.Show("Adja meg a látványosság nevét!");
+                labelUjlatvanyossagNev.ForeColor = Color.Red;
+            }
+            else
+            {
+                MessageBox.Show("A látványosság neve nagybetűvel kell kezdődjön!");
+                labelUjlatvanyossagNev.ForeColor = Color.Red;
+
+            }
 
         }
     }
